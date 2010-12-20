@@ -1,0 +1,54 @@
+
+what's new in msid 0.4.5
+********************************************
+
+ + lots of refactoring and cleanups,
+   clean compiler warnings etc, separate
+   playback and plugin handling as a
+   separate class, remove gnomevfs uri
+   handler, it did not work anyway
+
+ - warning, regression in ringtune
+   support for a while due to refactoring!
+
+what's new in msid 0.4
+********************************************
+
+ + ringtune support, dump to .wav
+   sorry no encoding for now
+
+what's new in msid 0.3
+********************************************
+
+ + downloading .sid's from webmirrors (beta)
+   (as promised on version 0.1 about-box ;))
+   supported mirrors:
+     + c64.org (uses local STIL database)
+     + hvsc.tp2.be (parse web-search results)
+
+ + downloading game images and displaying
+   them as a slideshow while music plays
+     + uses images from c64.com
+
+ + deletion of files in player view
+
+ + audio output plugins + search
+   plugins via dlopen()
+     + pretty easy to develop your own
+
+ + selection of subsong triggers it
+
+ - taken away experimental ffwd support
+
+future
+********************************************
+
+ + zipped STIL.txt to reduce needed space
+ + Qt version coming up
+ + go forward in playlist (do not repeat by default)
+ + repeat setting
+ + better web support, more mirrors
+ + more configuration options (!)
+ + more application specific theming
+ + better desktop version for ubuntu, maybe
+   with completely different UI

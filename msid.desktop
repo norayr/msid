@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=msid
+Exec=/opt/msid/usr/bin/msid
+Icon=msid
+X-Icon-path=/usr/share/pixmaps/
+X-Window-Icon=msid
+X-Window-Icon-Dimmed=msid
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable
+#MimeType=audio/prs.sid;application/sidplay-info;application/x-powerpacker;

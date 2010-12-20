@@ -1,0 +1,5 @@
+
+methods to get and set simple config variables, such as filepath/uri,
+this is needed for local HVSC search ... or is it (?) maybe STIL.txt
+could be used for that and then just ask directory from user in configuration
+
