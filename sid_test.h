@@ -26,6 +26,7 @@ unsigned int mmc_ok();
 #endif
 
 unsigned int sidpath_ok();
+unsigned int thumbpath_ok();
 
 #endif
 

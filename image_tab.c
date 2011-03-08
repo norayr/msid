@@ -70,12 +70,10 @@ darken_anim_image (GdkPixbuf *pixbuf)
 
   //  p = pixels + y * rowstride + x * n_channels;
 
-  for (y=0; y<height; y++)
-  {
+  for (y=0; y<height; y++) {
     p = pixels + y * rowstride;
 
-    for (x=0; x<width; x++)
-    {
+    for (x=0; x<width; x++) {
       p[0] /= 3;
       p[1] /= 3;
       p[2] /= 3;
@@ -89,7 +87,7 @@ void
 darken_current_animation_image ()
 {
   if (anim.pix)
-    darken_anim_image (anim.pix);
+    darken_anim_image(anim.pix);
 }
 
 
@@ -145,8 +143,7 @@ change_picture (gpointer data)
 
   gdk_threads_enter();
 
-  if (stop_animation)
-  {
+  if (stop_animation) {
     animation_timeout=0;
     stop_animation=0;
 
@@ -155,17 +152,17 @@ change_picture (gpointer data)
     return FALSE;
   }
 
-  snprintf (tmp_fname, 256, "/tmp/%s_0%d.gif", anim->game_name, anim->frame++);
+  snprintf(tmp_fname, 256, "%s/sidthumbs/%s_0%d.gif", getenv("HOME"), anim->game_name, anim->frame++);
 
   if (anim->pix)
     g_object_unref (anim->pix);
 
-  anim->pix = gdk_pixbuf_new_from_file_at_scale (tmp_fname,
-						 IM_SCALE_W, -1,
-						 TRUE,
-						 &error);
+  anim->pix = gdk_pixbuf_new_from_file_at_scale(tmp_fname,
+						IM_SCALE_W, -1,
+						TRUE,
+						&error);
 
-  gtk_image_set_from_pixbuf (GTK_IMAGE(img), anim->pix);
+  gtk_image_set_from_pixbuf(GTK_IMAGE(img), anim->pix);
 
   gdk_flush();
   gdk_threads_leave();
@@ -179,9 +176,8 @@ change_picture (gpointer data)
 void
 stop_screenshot_animation()
 {
-  if (animation_timeout != 0)
-  {
-    gtk_button_set_label (GTK_BUTTON(anim_control_button), " PLAY ");
+  if (animation_timeout != 0) {
+    gtk_button_set_label(GTK_BUTTON(anim_control_button), " PLAY ");
     stop_animation = 1;
   }
 }
@@ -189,13 +185,12 @@ stop_screenshot_animation()
 void
 play_screenshot_animation()
 {
-  if (animation_timeout == 0 && anim.frames_total > 0)
-  {
-    gtk_widget_set_sensitive (anim_control_button, TRUE);
-    gtk_button_set_label (GTK_BUTTON(anim_control_button), " PAUSE ");
+  if (animation_timeout == 0 && anim.frames_total > 0) {
+    gtk_widget_set_sensitive(anim_control_button, TRUE);
+    gtk_button_set_label(GTK_BUTTON(anim_control_button), " PAUSE ");
 
     stop_animation = 0;
-    animation_timeout = g_timeout_add (3000, (GSourceFunc) change_picture, &anim);
+    animation_timeout = g_timeout_add(3000, (GSourceFunc) change_picture, &anim);
   }
 }
 
@@ -203,8 +198,8 @@ void
 toggle_screenshot_animation (GtkButton *button, gpointer data)
 {
   /* if playing -> pause */
-  if (animation_timeout != 0)
-  {
+  if (animation_timeout != 0) {
+
     stop_screenshot_animation();
 
     /*
@@ -215,14 +210,13 @@ toggle_screenshot_animation (GtkButton *button, gpointer data)
     */
   }
   /* if pause -> play */
-  else
-  {
+  else {
     play_screenshot_animation();
   }
 }
 
 
-void *fetch_screenshot (void *file_path)
+void *fetch_screenshot(void *file_path)
 {
   char uri[256];
   char *sid_fname;
@@ -233,8 +227,8 @@ void *fetch_screenshot (void *file_path)
   char *ext;
   int k;
 
-  sid_fname = get_filename_from_uri ((char *) file_path);
-  name = g_ascii_strdown (sid_fname, strlen(sid_fname));
+  sid_fname = get_filename_from_uri((char *) file_path);
+  name = g_ascii_strdown(sid_fname, strlen(sid_fname));
 
   ext = strstr (name, ".sid");
   ext[0] = '\0';
@@ -244,28 +238,31 @@ void *fetch_screenshot (void *file_path)
   // will fetch images until fails
 #define FRAME_AMOUNT 20
 
-  for (k=1; k<FRAME_AMOUNT+1; k++)
-  {
-    snprintf (pic_fname, 256, "%s_0%d.gif", name, k);
+  for (k=1; k<FRAME_AMOUNT+1; k++) {
+
+    snprintf(pic_fname, 256, "%s_0%d.gif", name, k);
 
 #define C64_ORG_SCREENSHOT_ROOT "http://www.c64.com/games/screenshots"
 
-    snprintf (uri, 256, "%s/%c/%s", C64_ORG_SCREENSHOT_ROOT, name[0], pic_fname);
-    snprintf (tmp_fname, 256, "/tmp/%s", pic_fname);
+    // check that directory exists, if not create one
+    if (!thumbpath_ok()) {
+      return NULL;
+    }
 
-    if (g_file_test (tmp_fname, G_FILE_TEST_EXISTS))
-    {
+    snprintf(uri, 256, "%s/%c/%s", C64_ORG_SCREENSHOT_ROOT, name[0], pic_fname);
+    snprintf(tmp_fname, 256, "%s/sidthumbs/%s", getenv("HOME"), pic_fname);
+
+    if (g_file_test (tmp_fname, G_FILE_TEST_EXISTS)) {
       /* we have this pic already - no need to fetch */
+      k++;
       continue;
     }
 
     fetch_data_to_file (uri, tmp_fname);
 
-    if (!g_file_test (tmp_fname, G_FILE_TEST_EXISTS))
-    {
+    if (!g_file_test (tmp_fname, G_FILE_TEST_EXISTS)) {
       /* no picture at all */
-      if (k==1)
-      {
+      if (k==1) {
 	/* not a single image ... buhuu */
 	gdk_threads_enter();
 	snprintf (buffer, 256, "SORRY, NO IMAGES FOUND");
@@ -278,8 +275,7 @@ void *fetch_screenshot (void *file_path)
 	return NULL;
       }
       /* picture count ends here */
-      else
-      {
+      else {
 	gdk_threads_enter();
 	snprintf (buffer, 256, "%d IMAGES FOUND", k-1);
 	set_status_text (buffer, NULL);
@@ -294,10 +290,9 @@ void *fetch_screenshot (void *file_path)
   anim.frame = 1;
   anim.frames_total = k;
 
-  change_picture (&anim);
+  change_picture(&anim);
 
-  if (!animation_timeout)
-  {
+  if (!animation_timeout) {
     gdk_threads_enter();
     play_screenshot_animation();
     gdk_flush();
@@ -309,23 +304,22 @@ void *fetch_screenshot (void *file_path)
   return NULL;
 }
 
-void set_game_screenshot (char *name)
+void set_game_screenshot(char *name)
 {
   GError *error =NULL;
-  g_thread_create (fetch_screenshot, name, FALSE, &error);
+
+  g_thread_create(fetch_screenshot, name, FALSE, &error);
 }
 
 static gboolean
-image_clicked (GtkWidget      *widget,
-	       GdkEventButton *event,
-	       gpointer        user_data)
+image_clicked(GtkWidget      *widget,
+	      GdkEventButton *event,
+	      gpointer        user_data)
 {
-  if (animation_timeout == 0 && anim.frames_total > 0)
-  {
+  if (animation_timeout == 0 && anim.frames_total > 0) {
     play_screenshot_animation();
   }
-  else if (animation_timeout != 0)
-  {
+  else if (animation_timeout != 0) {
     stop_screenshot_animation();
   }
   return TRUE;

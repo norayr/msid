@@ -34,18 +34,32 @@ unsigned int mmc_ok()
 }
 #endif
 
-unsigned int sidpath_ok()
+static unsigned int path_ok(const char *path)
 {
-  char path[256];
-
-  snprintf (path, 256, "%s/sidmusic", getenv("HOME"));
-
-  if (g_file_test (path, G_FILE_TEST_IS_DIR)) {
+  if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
     return 1;
   }
 
   /* does not exist, let's try to create one */
   return mkdir(path);
+}
+
+unsigned int sidpath_ok()
+{
+  char path[256];
+
+  snprintf(path, 256, "%s/sidmusic", getenv("HOME"));
+
+  return path_ok(path);
+}
+
+unsigned int thumbpath_ok()
+{
+  char path[256];
+
+  snprintf(path, 256, "%s/sidthumbs", getenv("HOME"));
+
+  return path_ok(path);
 }
 
 

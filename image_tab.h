@@ -28,6 +28,7 @@
 #include <hildon/hildon.h>
 #endif
 
+#include "sid_test.h"
 #include "plugins/curling.h"
 
 GtkWidget* create_image_page (void (*status_text_func) (const char*, const char*));
