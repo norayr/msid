@@ -314,24 +314,24 @@ void *search_thread (void *arg)
     for (tmp = list; tmp; tmp = g_slist_next(tmp)) {
 
       entry = (msid_search_entry*) tmp->data;
-      gtk_list_store_append (GTK_LIST_STORE(model), &iter);
-      gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-			  LOADER_LIST_SONG_NAME, g_strdup(entry->file_name),
-	                  LOADER_LIST_SONG_URI,  g_strdup(entry->uri),
-	                  LOADER_LIST_SONG_SHORT_URI, g_strdup(entry->hvsc_path),
-	                  -1);
+      gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+      gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			 LOADER_LIST_SONG_NAME, g_strdup(entry->file_name),
+			 LOADER_LIST_SONG_URI,  g_strdup(entry->uri),
+			 LOADER_LIST_SONG_SHORT_URI, g_strdup(entry->hvsc_path),
+			 -1);
     }
-    g_slist_foreach (list, (GFunc) free_entry, NULL);
-    g_slist_free (list);
+    g_slist_foreach(list, (GFunc) free_entry, NULL);
+    g_slist_free(list);
   }
 
   gdk_threads_leave();
 
-  g_free (args->needle);
+  g_free(args->needle);
 
-  G_LOCK (search_active);
+  G_LOCK(search_active);
   search_active = FALSE;
-  G_UNLOCK (search_active);
+  G_UNLOCK(search_active);
 
   return NULL;
 }

@@ -135,7 +135,7 @@ draw_text (char *txt)
 
 
 static gboolean
-change_picture (gpointer data)
+change_picture(gpointer data)
 {
   char tmp_fname[256];
   GError *error=NULL;
@@ -152,10 +152,13 @@ change_picture (gpointer data)
     return FALSE;
   }
 
-  snprintf(tmp_fname, 256, "%s/sidthumbs/%s_0%d.gif", getenv("HOME"), anim->game_name, anim->frame++);
+  if (anim->frame +1 < 10)
+    snprintf(tmp_fname, 256, "%s/sidthumbs/%s_0%d.gif", getenv("HOME"), anim->game_name, anim->frame++);
+  else
+    snprintf(tmp_fname, 256, "%s/sidthumbs/%s_%d.gif", getenv("HOME"), anim->game_name, anim->frame++);
 
   if (anim->pix)
-    g_object_unref (anim->pix);
+    g_object_unref(anim->pix);
 
   anim->pix = gdk_pixbuf_new_from_file_at_scale(tmp_fname,
 						IM_SCALE_W, -1,
