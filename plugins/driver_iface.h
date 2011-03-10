@@ -40,11 +40,16 @@ class msid_driver
 
     virtual void set_config (emuConfig *config) {}
 
+    // default implementation does nothing, plugins may use this
+    virtual void set_path(const char *path) { return; }
+
     inline unsigned int bsize() { return buffer_size; }
     inline void set_bsize(unsigned int bsize) { buffer_size = bsize; }
 
-    private :
-      int buffer_size;
+ private :
+
+    int buffer_size;
+
 };
 
 typedef msid_driver* create_t();

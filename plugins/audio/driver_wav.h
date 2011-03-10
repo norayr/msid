@@ -20,6 +20,7 @@
 #ifndef MSID_WAV_DRIVER
 #define MSID_WAV_DRIVER
 
+#include <stdlib.h>
 #include <string.h>
 #include <sndfile.h>
 
@@ -29,19 +30,28 @@ class wav_driver : public msid_driver
 {
   public :
 
-  wav_driver() {}
+  wav_driver() { song_path = NULL; }
+  ~wav_driver() {
+    if (song_path) {
+      free(song_path);
+    }
+  }
 
   short initialize(void *format, int freq, int chn);
   short play_stream(unsigned char *buffer, int size);
   void stop();
   void close();
 
-  void set_config (emuConfig *cfg);
+  void set_config(emuConfig *cfg);
+
+  void set_path(const char *path);
 
   private :
 
   SF_INFO sfinfo;
   SNDFILE *snd;
+
+  char *song_path;
 
 };
 

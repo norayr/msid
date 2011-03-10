@@ -893,7 +893,9 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
 
       msid.setLoop(1);
 
-      // TODO - set as current ringtone automatically if possible?
+#ifdef HILDON
+      // TODO - write path to /home/user/.user-ringtone
+#endif
 
       update_status_text("RINGTONE CREATED", C64_FG);
 

@@ -8,9 +8,6 @@ what's new in msid 0.4.5
    separate class, remove gnomevfs uri
    handler, it did not work anyway
 
- - warning, regression in ringtune
-   support for a while due to refactoring!
-
 what's new in msid 0.4
 ********************************************
 

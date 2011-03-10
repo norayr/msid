@@ -21,6 +21,13 @@
 
 short wav_driver::initialize(void *format, int freq, int chn)
 {
+  char dump_name[256];
+
+  if (!song_path) {
+    fprintf(stderr, "%s : error - song path not set!", __func__);
+    return 0;
+  }
+
   this->set_bsize(1024);
 
   memset(&sfinfo, 0, sizeof(SF_INFO));
@@ -28,16 +35,23 @@ short wav_driver::initialize(void *format, int freq, int chn)
   sfinfo.channels = chn;
   sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
+  snprintf(dump_name, 256, "%s.wav", song_path);
+
   if (sf_format_check(&sfinfo) == true) {
 
-    snd = sf_open("dump.wav", SFM_WRITE, &sfinfo);
+    snd = sf_open(dump_name, SFM_WRITE, &sfinfo);
 
   } else {
     return 0;
   }
-
   return 1;
 }
+
+void wav_driver::set_path(const char *path)
+{
+  song_path = strdup(path);
+}
+
 
 short wav_driver::play_stream(unsigned char *buffer, int size)
 {

@@ -58,6 +58,7 @@ void msidMachine::setSong(const char *path, guint subsong)
 
   play_data.song = strdup(path);
   play_data.song_no = subsong;
+
 }
 
 void msidMachine::setSubSong(guint subsong)
@@ -286,6 +287,8 @@ void msidMachine::play()
   play_data.driver = (msid_driver *) audioPlugin()->plugin_object;
 
   // initialize driver plugin and configure libsidplay
+
+  play_data.driver->set_path(play_data.song);
 
   play_data.driver->initialize(NULL, 0, play_data.channels);
 
