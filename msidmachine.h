@@ -34,6 +34,7 @@ enum {
 // these settings are used by default *only* if everything else fails
 #define DEFAULT_AUDIO_PLUGIN "libmsid_pulse.so"
 #define DEFAULT_SEARCH_PLUGIN "libmsid_c64org.so"
+#define DEFAULT_DUMP_PLUGIN "libmsid_wav.so"
 static const gchar default_config[] =
   "[msid_config]\naudio_plugin = " DEFAULT_AUDIO_PLUGIN "\n search_plugin = " DEFAULT_SEARCH_PLUGIN "\n";
 

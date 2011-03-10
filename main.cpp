@@ -789,11 +789,9 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
   GtkWidget *sizelabel;
   GtkWidget *scale = gtk_hscale_new_with_range(1.0, 120.0, 1.0);
 
+  char audioplugin[256];
+
   gtk_range_set_value(GTK_RANGE(scale), msid.length());
-
-  // FIXME - switch to 'wav' plugin and back
-
-  // TODO - set as current ringtone automatically if possible?
 
   // cannot playback while dumping
   if (msid.isPlaying()) {
@@ -815,6 +813,7 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
   if (!filepath || !name) {
     return;
   }
+
 
   msid.setSong(filepath, SUBSONG);
 
@@ -851,6 +850,9 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
 
   case GTK_RESPONSE_ACCEPT:
   case GTK_RESPONSE_OK:
+
+    snprintf(audioplugin, 256, "%s", msid.audioPluginName());
+    msid.setAudioPlugin(DEFAULT_DUMP_PLUGIN);
 
     msid.setLoop(0);
 
@@ -892,12 +894,17 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
 
       msid.setLoop(1);
 
+      // TODO - set as current ringtone automatically if possible?
+
       update_status_text("RINGTONE CREATED", C64_FG);
+
+      msid.setAudioPlugin(audioplugin);
 
       break;
     default :
       break;
     }
+
 
   gtk_widget_destroy(dialog);
 

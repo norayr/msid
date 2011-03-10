@@ -359,8 +359,7 @@ void msidMachine::pause()
  * based on http://www.faqs.org/docs/Linux-mini/C++-dlopen.html
  */
 static unsigned int
-init_msid_plugin (msid_plugin_iface *iface,
-                  const char *path)
+init_msid_plugin(msid_plugin_iface *iface, const char *path)
 {
   char *error;
   void *handle;
