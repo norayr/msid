@@ -856,7 +856,6 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
 
     msid.setLoop(0);
 
-      // FIXME - switch audio plugin during ringtone dump to libmsid_wav.so
       // FIXME - BLOCK HERE UNTIL THREAD READY
       {
 	unsigned int ready = 0;

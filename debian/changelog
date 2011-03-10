@@ -5,8 +5,10 @@ msid (0.4.5-2) unstable; urgency=low
   * lots of minor fixes to compiler warnings, removed unused
     variables and cleaned up the code
   * gnomevfs dependency removal, uri handler did not really work ok
+  * switch audio plugin when creating ringtone
+  * implement cache from thumbnails
 
- -- Tapani Pälli <lemody@gmail.com>  Mon, 29 Nov 2010 21:54:11 +0200
+ -- Tapani Pälli <lemody@gmail.com>  Thu, 10 Mar 2011 07:55:40 +0200
 
 msid (0.4.4-1) unstable; urgency=low
 

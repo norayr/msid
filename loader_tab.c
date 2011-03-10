@@ -60,10 +60,10 @@ static GtkTreeModel*
 create_and_fill_model (void)
 {
   return GTK_TREE_MODEL
-    (gtk_list_store_new (LOADER_LIST_NUM_COLS,
-			 G_TYPE_STRING,
-			 G_TYPE_STRING,
-			 G_TYPE_STRING));
+    (gtk_list_store_new(LOADER_LIST_NUM_COLS,
+			G_TYPE_STRING,
+			G_TYPE_STRING,
+			G_TYPE_STRING));
 }
 
 static GtkWidget*
@@ -73,38 +73,38 @@ create_view_and_model (void)
   GtkTreeModel        *model;
   GtkWidget           *view;
 
-  view = gtk_tree_view_new ();
+  view = gtk_tree_view_new();
 
-  renderer   = gtk_cell_renderer_text_new ();
+  renderer = gtk_cell_renderer_text_new();
 
 #ifdef HANDHELD_UI
   ;//g_object_set (G_OBJECT (renderer), "height", 32, NULL);
 #endif
 
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
-                                               -1, "Song", renderer,
-                                               "text", LOADER_LIST_SONG_NAME, NULL);
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
-                                               -1, "URI", renderer,
-                                               "text", LOADER_LIST_SONG_URI, NULL);
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (view),
-                                               -1, "HVSC PATH", renderer,
-                                               "text", LOADER_LIST_SONG_SHORT_URI, NULL);
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+					      -1, "Song", renderer,
+					      "text", LOADER_LIST_SONG_NAME, NULL);
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+					      -1, "URI", renderer,
+					      "text", LOADER_LIST_SONG_URI, NULL);
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW (view),
+					      -1, "HVSC PATH", renderer,
+					      "text", LOADER_LIST_SONG_SHORT_URI, NULL);
 
-  gtk_tree_view_column_set_visible (gtk_tree_view_get_column
-				    (GTK_TREE_VIEW(view), LOADER_LIST_SONG_NAME), FALSE);
-  gtk_tree_view_column_set_visible (gtk_tree_view_get_column
-				    (GTK_TREE_VIEW(view), LOADER_LIST_SONG_URI), FALSE);
+  gtk_tree_view_column_set_visible(gtk_tree_view_get_column
+				   (GTK_TREE_VIEW(view), LOADER_LIST_SONG_NAME), FALSE);
+  gtk_tree_view_column_set_visible(gtk_tree_view_get_column
+				   (GTK_TREE_VIEW(view), LOADER_LIST_SONG_URI), FALSE);
 
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(view), FALSE);
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(view), TRUE);
   gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                               GTK_SELECTION_SINGLE);
 
-  model = create_and_fill_model ();
+  model = create_and_fill_model();
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view), model);
-  g_object_unref (model); /* destroy model automatically with view */
+  gtk_tree_view_set_model(GTK_TREE_VIEW (view), model);
+  g_object_unref(model); /* destroy model automatically with view */
 
   return view;
 }
@@ -136,37 +136,32 @@ show_progress (gpointer data)
 }
 
 
-void * download_thread (void *arg)
+void * download_thread(void *arg)
 {
   loader_download_args *args;
 
   args = (loader_download_args *) arg;
 
-  fetch_data_to_file (args->uri, args->file_path);
+  fetch_data_to_file(args->uri, args->file_path);
 
   gdk_threads_enter();
 
-  if (!g_file_test (args->file_path, G_FILE_TEST_EXISTS))
-  {
-    set_status_text ("NETWORK ERROR", NULL);
+  if (!g_file_test(args->file_path, G_FILE_TEST_EXISTS)) {
+    set_status_text("NETWORK ERROR", NULL);
     goto leave;
-  }
-  else
-  {
-    set_status_text ("READY.", NULL);
+  } else {
+    set_status_text("READY.", NULL);
   }
 
-  gtk_list_store_remove (GTK_LIST_STORE(args->model), &args->iter);
+  gtk_list_store_remove(GTK_LIST_STORE(args->model), &args->iter);
 
-  if (sidtune_is_ok (args->file_path))
-  {
-    add_song_to_playlist (args->file_path);
+  if (sidtune_is_ok(args->file_path)) {
 
-    set_status_text ("SONG WAS DOWNLOADED", NULL);
-  }
-  else
-  {
-    set_status_text ("TUNE NOT SUPPORTED", NULL);
+    add_song_to_playlist(args->file_path);
+
+    set_status_text("SONG WAS DOWNLOADED", NULL);
+  } else {
+    set_status_text("TUNE NOT SUPPORTED", NULL);
   }
 
  leave:
@@ -185,10 +180,10 @@ void * download_thread (void *arg)
 
 
 static void
-download_and_remove (GtkTreeView       *tree_view,
-		     GtkTreePath       *path,
-		     GtkTreeViewColumn *column,
-		     gpointer           user_data)
+download_and_remove(GtkTreeView       *tree_view,
+		    GtkTreePath       *path,
+		    GtkTreeViewColumn *column,
+		    gpointer           user_data)
 {
   GtkTreeModel *model=NULL;
   GtkTreeIter iter;
@@ -202,13 +197,12 @@ download_and_remove (GtkTreeView       *tree_view,
   snprintf (msid_path, 256, "%s/sidmusic", getenv("HOME"));
 
   // TODO - do not duplicate this code, it's already in player
-  static const char *path_list[] =
-    {
-      "/home/user/MyDocs/sidmusic",
-      "/media/mmc2/sidmusic",
-      msid_path,
-      NULL
-    };
+  static const char *path_list[] = {
+    "/home/user/MyDocs/sidmusic",
+    "/media/mmc2/sidmusic",
+    msid_path,
+    NULL
+  };
   const char **p = path_list;
 
   G_LOCK (search_active);
@@ -225,35 +219,34 @@ download_and_remove (GtkTreeView       *tree_view,
 #ifdef HILDON
 #define HILDON_MMC1 "/home/user/MyDocs/sidmusic"
 #define HILDON_MMC2 "/media/mmc2/sidmusic"
-  if (!g_file_test (HILDON_MMC1, G_FILE_TEST_IS_DIR) &&
-      !g_file_test (HILDON_MMC2, G_FILE_TEST_IS_DIR))
-  {
-    set_status_text ("INSERT MMC CARD", NULL);
+  if (!g_file_test(HILDON_MMC1, G_FILE_TEST_IS_DIR) &&
+      !g_file_test(HILDON_MMC2, G_FILE_TEST_IS_DIR)) {
+    set_status_text("INSERT MMC CARD", NULL);
   }
 #endif
 
-  model = gtk_tree_view_get_model (tree_view);
-  gtk_tree_model_get_iter (model, &iter, path);
+  model = gtk_tree_view_get_model(tree_view);
+  gtk_tree_model_get_iter(model, &iter, path);
 
-  gtk_tree_model_get (model, &iter,
-		      LOADER_LIST_SONG_NAME, &name,
-		      LOADER_LIST_SONG_URI,  &uri,
-		      -1);
+  gtk_tree_model_get(model, &iter,
+		     LOADER_LIST_SONG_NAME, &name,
+		     LOADER_LIST_SONG_URI,  &uri,
+		     -1);
 
   /*
    * TODO - get path from settings ...
    */
 
-  while (*p)
-  {
-    error =NULL;
-    dir = g_dir_open (*p, 0, &error);
+  while (*p) {
 
-    if (dir)
-    {
+    error =NULL;
+    dir = g_dir_open(*p, 0, &error);
+
+    if (dir) {
+
       g_dir_close(dir);
 
-      snprintf (file_path, 256, "%s/%s", *p, name);
+      snprintf(file_path, 256, "%s/%s", *p, name);
 
       // printf("msid downloading [%s]\n", file_path);
 
@@ -264,25 +257,23 @@ download_and_remove (GtkTreeView       *tree_view,
       dload_args.model = model;
       dload_args.iter = iter;
 
-      dload_args.uri = g_strdup (uri);
-      dload_args.file_path = g_strdup (file_path);
+      dload_args.uri = g_strdup(uri);
+      dload_args.file_path = g_strdup(file_path);
 
       g_timeout_add(250, show_progress, NULL);
 
-      g_thread_create (download_thread, (void*) &dload_args, FALSE, &error);
+      g_thread_create(download_thread, (void*) &dload_args, FALSE, &error);
 
       break;
     }
     p++;
   }
 
-  if (success)
-  {
+  if (success) {
 #ifdef HANDHELD_UI
     ; // TODO - show infobanner
 #endif
   }
-
 }
 
 
@@ -309,7 +300,7 @@ void *search_thread (void *arg)
   //
 
   // blocks and can take a lot of time
-  list = msid_active_search_plugin->search_for_sid (args->needle, NULL);
+  list = msid_active_search_plugin->search_for_sid(args->needle, NULL);
 
   gdk_threads_enter();
 
@@ -317,10 +308,11 @@ void *search_thread (void *arg)
 
   model = gtk_tree_view_get_model(GTK_TREE_VIEW(song_list));
   gtk_tree_model_get_iter_first(model, &iter);
-  if (list)
-  {
-    for (tmp = list; tmp; tmp = g_slist_next(tmp))
-    {
+
+  if (list) {
+
+    for (tmp = list; tmp; tmp = g_slist_next(tmp)) {
+
       entry = (msid_search_entry*) tmp->data;
       gtk_list_store_append (GTK_LIST_STORE(model), &iter);
       gtk_list_store_set (GTK_LIST_STORE(model), &iter,
@@ -389,17 +381,15 @@ append_entry_completion (gpointer data)
 
   search_widgets *o = (search_widgets *) data;
 
-  model =
-    gtk_entry_completion_get_model
-    (gtk_entry_get_completion((GtkEntry*)o->entry));
+  model = gtk_entry_completion_get_model(gtk_entry_get_completion((GtkEntry*)o->entry));
 
-  gtk_tree_model_get_iter_first (model, &iter);
-  gtk_list_store_append (GTK_LIST_STORE(model), &iter);
-  gtk_list_store_set (GTK_LIST_STORE(model), &iter,
-		      0,
-		      g_strdup
-		      (gtk_entry_get_text((GtkEntry*)o->entry)),
-		      -1);
+  gtk_tree_model_get_iter_first(model, &iter);
+  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		     0,
+		     g_strdup
+		     (gtk_entry_get_text((GtkEntry*)o->entry)),
+		     -1);
 }
 
 
@@ -413,17 +403,15 @@ search_button_clicked (GtkButton *button,
 
   append_entry_completion (data);
 
-  const gchar *needle =
-    gtk_entry_get_text((GtkEntry*) o->entry);
+  const gchar *needle = gtk_entry_get_text((GtkEntry*) o->entry);
 
   // clear previous results
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW(o->song_list));
-  while (gtk_tree_model_get_iter_first(model, &iter))
-  {
-    gtk_list_store_remove (GTK_LIST_STORE(model), &iter);
+  model = gtk_tree_view_get_model(GTK_TREE_VIEW(o->song_list));
+  while (gtk_tree_model_get_iter_first(model, &iter)) {
+    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
   }
 
-  make_search (o->song_list, needle);
+  make_search(o->song_list, needle);
 }
 
 
@@ -436,10 +424,9 @@ clear_loader_list (GtkButton *button,
 
   search_widgets *o = (search_widgets *) data;
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW(o->song_list));
-  while (gtk_tree_model_get_iter_first(model, &iter))
-  {
-    gtk_list_store_remove (GTK_LIST_STORE(model), &iter);
+  model = gtk_tree_view_get_model(GTK_TREE_VIEW(o->song_list));
+  while (gtk_tree_model_get_iter_first(model, &iter)) {
+    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
   }
 }
 
@@ -475,7 +462,7 @@ run_search (GtkEntry *entry,
   }
   G_UNLOCK (search_active);
 
-  search_button_clicked (NULL, data);
+  search_button_clicked(NULL, data);
 }
 
 
@@ -501,33 +488,29 @@ create_loader_page (msid_search_plugin *plugin,
 
   set_status_text = status_text_func;
 
-  /*
-   * create containers
-   */
+  /* create containers */
 
   loader_main_box = gtk_vbox_new (FALSE, 0);
 
-  find_box = gtk_hbox_new (FALSE, 0);
-  song_box = gtk_vbox_new (FALSE, 0);
+  find_box = gtk_hbox_new(FALSE, 0);
+  song_box = gtk_vbox_new(FALSE, 0);
 
-  /*
-   * create widgets
-   */
+  /* create widgets */
 
 #ifdef MAEMO5
   scroll_win = hildon_pannable_area_new();
 #else
-  scroll_win = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scroll_win),
-  				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  scroll_win = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_win),
+				 GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 #endif
 
-  search_button = create_ui_button ("search");
+  search_button = create_ui_button("search");
   search_entry  = gtk_entry_new();
 
-  entry_completion = gtk_entry_completion_new ();
+  entry_completion = gtk_entry_completion_new();
 
-  progress_bar = gtk_progress_bar_new ();
+  progress_bar = gtk_progress_bar_new();
 
 #ifdef HANDHELD_UI
   ; //  gtk_widget_set_size_request (search_entry, -1, 80);
@@ -539,60 +522,53 @@ create_loader_page (msid_search_plugin *plugin,
   s_widgets.song_list = song_list;
 
 
-  gtk_entry_completion_set_inline_completion (entry_completion, TRUE);
-  gtk_entry_completion_set_popup_completion  (entry_completion, TRUE);
+  gtk_entry_completion_set_inline_completion(entry_completion, TRUE);
+  gtk_entry_completion_set_popup_completion(entry_completion, TRUE);
 #ifdef HILDON
-  gtk_entry_completion_set_popup_completion  (entry_completion, TRUE);
+  gtk_entry_completion_set_popup_completion(entry_completion, TRUE);
 #else
-  gtk_entry_completion_set_inline_selection  (entry_completion, TRUE);
+  gtk_entry_completion_set_inline_selection(entry_completion, TRUE);
 #endif
 
 
-  gtk_entry_set_completion (GTK_ENTRY(search_entry), entry_completion);
+  gtk_entry_set_completion(GTK_ENTRY(search_entry), entry_completion);
 
   GtkTreeModel* completion_model =
-    GTK_TREE_MODEL (gtk_list_store_new (1, G_TYPE_STRING));
+    GTK_TREE_MODEL(gtk_list_store_new(1, G_TYPE_STRING));
 
-  gtk_entry_completion_set_model (entry_completion,
-				  GTK_TREE_MODEL (completion_model));
-  gtk_entry_completion_set_text_column (entry_completion, 0);
+  gtk_entry_completion_set_model(entry_completion,
+				 GTK_TREE_MODEL (completion_model));
+  gtk_entry_completion_set_text_column(entry_completion, 0);
 
 
 
-  /*
-   * connect to signals
-   */
+  /* connect to signals */
 
-  g_signal_connect (G_OBJECT(search_entry), "activate",
-		    G_CALLBACK(run_search), &s_widgets);
+  g_signal_connect(G_OBJECT(search_entry), "activate",
+		   G_CALLBACK(run_search), &s_widgets);
 
-  g_signal_connect (G_OBJECT(search_button), "clicked",
-		    G_CALLBACK(run_search), &s_widgets);
+  g_signal_connect(G_OBJECT(search_button), "clicked",
+		   G_CALLBACK(run_search), &s_widgets);
 
-  g_signal_connect (G_OBJECT(song_list),
-		    "row-activated",
-		    G_CALLBACK(download_and_remove),
-		    NULL);
+  g_signal_connect(G_OBJECT(song_list),
+		   "row-activated",
+		   G_CALLBACK(download_and_remove),
+		   NULL);
 
-  /*
-   * pack widgets
-   */
+  /* pack widgets */
 
-  gtk_box_pack_start (GTK_BOX(find_box), search_entry,  TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX(find_box), search_button, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(find_box), search_entry,  TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(find_box), search_button, FALSE, FALSE, 0);
 
-  gtk_container_add (GTK_CONTAINER (scroll_win), song_list);
+  gtk_container_add(GTK_CONTAINER (scroll_win), song_list);
 
-  /*
-   * pack containers
-   */
+  /* pack containers */
 
-  gtk_box_pack_start (GTK_BOX(loader_main_box), find_box, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(loader_main_box), find_box, FALSE, FALSE, 0);
 
-  append_to_vbox (loader_main_box, song_box, FALSE, FALSE);
-  append_to_vbox (loader_main_box, scroll_win, TRUE, TRUE);
-  append_to_vbox (loader_main_box, progress_bar, FALSE, FALSE);
-
+  append_to_vbox(loader_main_box, song_box, FALSE, FALSE);
+  append_to_vbox(loader_main_box, scroll_win, TRUE, TRUE);
+  append_to_vbox(loader_main_box, progress_bar, FALSE, FALSE);
 
   return loader_main_box;
 }
