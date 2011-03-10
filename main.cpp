@@ -783,6 +783,8 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
   gchar *filepath=NULL;
   gchar *name=NULL;
   char buffer[256];
+  char conf_path[256];
+  FILE *conf_file;
 
   GtkWidget *dialog;
   GtkWidget *label;
@@ -894,7 +896,13 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
       msid.setLoop(1);
 
 #ifdef HILDON
-      // TODO - write path to /home/user/.user-ringtone
+      // set as current user ringtone
+      snprintf(conf_path, 256, "%s/.user-ringtone", getenv("HOME"));
+      conf_file = fopen(conf_path, "w");
+      if (conf_file) {
+	fprintf(conf_file, "%s.wav", filepath);
+	fclose(conf_file);
+      }
 #endif
 
       update_status_text("RINGTONE CREATED", C64_FG);

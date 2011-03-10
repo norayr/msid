@@ -7,8 +7,9 @@ msid (0.4.5-2) unstable; urgency=low
   * gnomevfs dependency removal, uri handler did not really work ok
   * switch audio plugin when creating ringtone
   * implement cache from thumbnails
+  * set created ringtone as user ringtone
 
- -- Tapani Pälli <lemody@gmail.com>  Thu, 10 Mar 2011 07:55:40 +0200
+ -- Tapani Pälli <lemody@gmail.com>  Thu, 10 Mar 2011 09:21:44 +0200
 
 msid (0.4.4-1) unstable; urgency=low
 
