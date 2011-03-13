@@ -8,8 +8,8 @@ OPTS = -g -O2 -Wall
 
 DEPS = `pkg-config --libs --cflags glib-2.0 gthread-2.0 gtk+-2.0` -lsidplay -lcurl
 
-#HILDON = `pkg-config --cflags --libs hildon-1 hildon-fm-2` -DHILDON -DHANDHELD_UI
-#OPTDIR = $(DESTDIR)/opt/msid
+HILDON = `pkg-config --cflags --libs hildon-1 hildon-fm-2` -DHILDON -DHANDHELD_UI
+OPTDIR = $(DESTDIR)/opt/msid
 
 PROGRAM_DATA_DIR = $(OPTDIR)/usr/share/$(PROGRAM)
 

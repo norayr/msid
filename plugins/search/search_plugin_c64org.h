@@ -33,6 +33,8 @@ extern "C" {
 class c64org_search : public msid_search_plugin
 {
   public :
+
+  c64org_search() { tree = NULL; }
   ~c64org_search();
 
   GSList *search_for_sid (const char *needle, gpointer data);

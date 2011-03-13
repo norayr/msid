@@ -1,3 +1,9 @@
+msid (0.4.6-2) unstable; urgency=low
+
+  * fix a crash in c64org search plugin
+
+ -- Tapani Pälli <lemody@gmail.com>  Sun, 13 Mar 2011 20:36:18 +0200
+
 msid (0.4.5-2) unstable; urgency=low
 
   * move sid playback and search functionality under

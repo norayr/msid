@@ -257,6 +257,7 @@ load_search_plugin(GtkWidget *widget, gpointer data)
     g_free(plugin);
 
     msid_active_search_plugin = (msid_search_plugin *) msid.searchPlugin()->plugin_object;
+    msid_active_search_plugin->init();
   }
 }
 
@@ -798,6 +799,11 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
   // cannot playback while dumping
   if (msid.isPlaying()) {
     msid.stop();
+
+    gtk_widget_set_sensitive(player_play_button, FALSE);
+    gtk_widget_set_sensitive(player_pause_button, FALSE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(player_pause_button), FALSE);
+
   }
 
   if (!current_selection) {
@@ -1133,7 +1139,6 @@ int main(int argc, char **argv)
 #endif
 
   msid_active_search_plugin = (msid_search_plugin *) msid.searchPlugin()->plugin_object;
-
   msid_active_search_plugin->init();
 
 
