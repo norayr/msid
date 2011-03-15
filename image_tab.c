@@ -219,6 +219,169 @@ toggle_screenshot_animation (GtkButton *button, gpointer data)
 }
 
 
+// Yahoo! image search
+// http://developer.yahoo.com/search/image/V1/imageSearch.html
+unsigned int yahoo_image_search(const char *name)
+{
+  struct stat stat_info;
+  FILE *in;
+
+  char buffer[256];
+
+  char *startp; // start of uri 'imgurl\x3d'
+  char *endp; // end of uri '\x26'
+  char *p;
+
+  char *blob;
+
+  unsigned int amount = 0;
+
+  snprintf(buffer, 256, "http://search.yahooapis.com/ImageSearchService/V1/imageSearch?appid=YahooDemo&query=%s&results=10", name);
+
+  fetch_data_to_file(buffer, "/tmp/msid_yahoo.xml");
+
+  // if does not exist, return
+  if(stat("/tmp/msid_yahoo.xml", &stat_info) != 0) {
+    return 0;
+  }
+  // check filesize - maybe a download has failed
+  if (stat_info.st_size < 1) {
+    return 0;
+  }
+  // ok fair enough, we have a file, read it in
+
+  blob = (char*) malloc (stat_info.st_size);
+
+  // traverse through html file searching for key 'imgurl\x3d' and fetch contents of url behind that until '\x26'
+
+  p = blob;
+
+  // read the whole buffer to memory
+  in = fopen("/tmp/msid_yahoo.xml", "r");
+  if (in) {
+    do {
+      fgets(p, 256, in);
+      p += strlen(p);
+    } while (!feof(in));
+    fclose(in);
+  } else {
+    goto away;
+  }
+
+  p = strstr(blob, "totalResultsReturned");
+  if (p) {
+
+    p += 22;
+    endp = strstr(p, "\"");
+
+    // length of field is (endp - startp) + 1
+    snprintf(buffer, (endp - p) + 1, "%s\\0", p);
+
+    // check if no results ...
+    if (atoi(buffer) <= 0) {
+      goto away;
+    }
+
+  } else {
+    goto away;
+  }
+
+#define YAHOO_START_KEY "Summary><Url>"
+
+  // inspect file with strstr
+  p = strstr(blob, YAHOO_START_KEY);
+  while (p) {
+
+    // set start and end pointers
+    startp = p; startp += strlen(YAHOO_START_KEY);
+    endp = strstr(startp, "</Url>");
+
+    // length of required uri buffer is (endp - startp) + 1
+    snprintf(buffer, (endp - startp) + 1, "%s\\0", startp);
+
+    // TODO fetch these files to some tmp directory
+
+    amount++;
+
+    p = strstr(endp, YAHOO_START_KEY);
+  }
+
+ away:
+
+  free(blob);
+  return amount;
+}
+
+// experimental google image search
+// note - this cannot be really used due to terms defined by google
+unsigned int google_image_search(const char *name)
+{
+  struct stat stat_info;
+  FILE *in;
+
+  char buffer[256];
+
+  char *startp; // start of uri 'imgurl\x3d'
+  char *endp; // end of uri '\x26'
+  char *p;
+
+  char *blob;
+
+  unsigned int amount = 0;
+
+  snprintf(buffer, 256, "http://www.google.com/images?hl=fi&source=hp&biw=1920&bih=975&q=%s&gbv=2&aq=f&aqi=g3&aql=&oq=", name);
+  fetch_data_to_file(buffer, "/tmp/msid_google.html");
+
+  // if does not exist, return
+  if(stat("/tmp/msid_google.html", &stat_info) != 0) {
+    return 0;
+  }
+  // check filesize - maybe a download has failed
+  if (stat_info.st_size < 1) {
+    return 0;
+  }
+  // ok fair enough, we have a file, read it in
+
+  blob = (char*) malloc (stat_info.st_size);
+
+  // traverse through html file searching for key 'imgurl\x3d' and fetch contents of url behind that until '\x26'
+
+  p = blob;
+
+  // read the whole buffer to memory
+  in = fopen("/tmp/msid_google.html", "r");
+  if (in) {
+    do {
+      fgets(p, 256, in);
+      p += strlen(p);
+    } while (!feof(in));
+    fclose(in);
+  } else {
+    goto away;
+  }
+
+  // inspect file with strstr
+  p = strstr(blob, "imgurl\\x3d");
+  while (p) {
+
+    // set start and end pointers
+    startp = p; startp += 10;
+    endp = strstr(startp, "\\x26");
+
+    // length of required uri buffer is (endp - startp) + 1
+    snprintf(buffer, (endp - startp) + 1, "%s\\0", startp);
+
+    amount++;
+
+    p = strstr(endp, "imgurl\\x3d");
+  }
+
+ away:
+
+  free(blob);
+  return amount;
+}
+
 void *fetch_screenshot(void *file_path)
 {
   char uri[256];
@@ -232,6 +395,8 @@ void *fetch_screenshot(void *file_path)
 
   sid_fname = get_filename_from_uri((char *) file_path);
   name = g_ascii_strdown(sid_fname, strlen(sid_fname));
+
+  yahoo_image_search(name);
 
   ext = strstr (name, ".sid");
   ext[0] = '\0';
@@ -261,7 +426,7 @@ void *fetch_screenshot(void *file_path)
       continue;
     }
 
-    fetch_data_to_file (uri, tmp_fname);
+    fetch_data_to_file(uri, tmp_fname);
 
     if (!g_file_test (tmp_fname, G_FILE_TEST_EXISTS)) {
       /* no picture at all */

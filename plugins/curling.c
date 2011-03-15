@@ -22,6 +22,8 @@
 unsigned int
 fetch_data_to_file (char *uri, char *file_path)
 {
+  struct stat stat_info;
+
   CURL *curl;
   CURLcode error_code;
   FILE *out;
@@ -54,14 +56,24 @@ fetch_data_to_file (char *uri, char *file_path)
     if (!errors) {
       DEBUG ("got data, analyzing\n");
 
+      // if does not exist, return
+      if(stat(file_path, &stat_info) != 0) {
+	errors=1;
+	goto errors_found;
+      }
+      // check filesize - maybe a download has failed
+      if (stat_info.st_size < 1) {
+	errors=1;
+	goto errors_found;
+      }
+
       /* check for error_code */
       out = fopen (file_path, "r");
       if (out) {
 	int k;
 	for (k=0; k<20; k++) {
-	  char *ret = fgets (buffer, 256, out);
-
-	  if (!ret || strstr (buffer, "404 Not Found")) {
+	  char *ret = fgets(buffer, 256, out);
+	  if (strstr(buffer, "404 Not Found")) {
 	    errors=1;
 	    break;
 	  }
@@ -69,6 +81,8 @@ fetch_data_to_file (char *uri, char *file_path)
 	fclose (out);
       }
     }
+
+  errors_found :
 
     if (errors) {
       DEBUG ("404 error, deleting data...\n");
