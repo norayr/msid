@@ -73,7 +73,7 @@ fetch_data_to_file (char *uri, char *file_path)
 	int k;
 	for (k=0; k<20; k++) {
 	  char *ret = fgets(buffer, 256, out);
-	  if (strstr(buffer, "404 Not Found")) {
+	  if (ret && strstr(buffer, "404 Not Found")) {
 	    errors=1;
 	    break;
 	  }

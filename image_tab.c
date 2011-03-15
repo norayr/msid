@@ -226,17 +226,27 @@ unsigned int yahoo_image_search(const char *name)
   struct stat stat_info;
   FILE *in;
 
-  char buffer[256];
+  char buffer[1024];
+  char tmp[256];
 
   char *startp; // start of uri 'imgurl\x3d'
   char *endp; // end of uri '\x26'
   char *p;
 
   char *blob;
+  char *filename;
 
   unsigned int amount = 0;
 
-  snprintf(buffer, 256, "http://search.yahooapis.com/ImageSearchService/V1/imageSearch?appid=YahooDemo&query=%s&results=10", name);
+  char needle[256];
+
+  snprintf(needle, 256, "%s", name);
+  p = strstr(needle, ".");
+  sprintf(p, "+c64");
+
+#define MSID_YAHOO_ID "o0yvGCjV34GMCmuam_eARZZ6dR0OL09dwlu1ZTczWstOWvVk2BDZuGUbXit78zBOVXS9wFVSLIdewqBt0FdLUtndjyPtCfc-"
+
+  snprintf(buffer, 1024, "http://search.yahooapis.com/ImageSearchService/V1/imageSearch?appid=%s&query=%s&results=10", MSID_YAHOO_ID, needle);
 
   fetch_data_to_file(buffer, "/tmp/msid_yahoo.xml");
 
@@ -302,6 +312,10 @@ unsigned int yahoo_image_search(const char *name)
     // TODO fetch these files to some tmp directory
 
     amount++;
+    filename = get_filename_from_uri(buffer);
+    snprintf(tmp, 256, "/tmp/%s", filename);
+
+    //    fetch_data_to_file(buffer, tmp);
 
     p = strstr(endp, YAHOO_START_KEY);
   }
