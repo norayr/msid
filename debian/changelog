@@ -1,3 +1,10 @@
+msid (0.4.7-2) unstable; urgency=low
+
+  * implement size limitation for the thumbnail cache
+  * misc refactoring of the code
+
+ -- Tapani Pälli <lemody@gmail.com>  Mon, 21 Mar 2011 20:41:53 +0200
+
 msid (0.4.6-2) unstable; urgency=low
 
   * fix a crash in c64org search plugin
