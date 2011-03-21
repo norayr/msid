@@ -784,8 +784,11 @@ create_ringtone(GtkMenuItem *menuitem, gpointer data)
   gchar *filepath=NULL;
   gchar *name=NULL;
   char buffer[256];
+
+#ifdef HILDON
   char conf_path[256];
   FILE *conf_file;
+#endif
 
   GtkWidget *dialog;
   GtkWidget *label;

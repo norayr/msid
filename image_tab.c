@@ -262,8 +262,6 @@ unsigned int yahoo_image_search(const char *name)
 
   blob = (char*) malloc (stat_info.st_size);
 
-  // traverse through html file searching for key 'imgurl\x3d' and fetch contents of url behind that until '\x26'
-
   p = blob;
 
   // read the whole buffer to memory
@@ -396,7 +394,7 @@ unsigned int google_image_search(const char *name)
   return amount;
 }
 
-void *fetch_screenshot(void *file_path)
+static void *fetch_screenshots(void *file_path)
 {
   char uri[256];
   char *sid_fname;
@@ -412,10 +410,16 @@ void *fetch_screenshot(void *file_path)
 
   yahoo_image_search(name);
 
+  snprintf(tmp_fname, 256, "%s/sidthumbs", getenv("HOME"));
+
+#define MSID_THUMB_CACHE_SIZE 1024*1024*2
+
+  truncate_cache_dir(tmp_fname, MSID_THUMB_CACHE_SIZE);
+
   ext = strstr (name, ".sid");
   ext[0] = '\0';
 
-  snprintf (anim.game_name, 256, "%s", name);
+  snprintf(anim.game_name, 256, "%s", name);
 
   // will fetch images until fails
 #define FRAME_AMOUNT 20
@@ -490,7 +494,7 @@ void set_game_screenshot(char *name)
 {
   GError *error =NULL;
 
-  g_thread_create(fetch_screenshot, name, FALSE, &error);
+  g_thread_create(fetch_screenshots, name, FALSE, &error);
 }
 
 static gboolean
