@@ -92,7 +92,7 @@ create_view_and_model (void)
 					      "text", LOADER_LIST_SONG_SHORT_URI, NULL);
 
   gtk_tree_view_column_set_visible(gtk_tree_view_get_column
-				   (GTK_TREE_VIEW(view), LOADER_LIST_SONG_NAME), FALSE);
+				   (GTK_TREE_VIEW(view), LOADER_LIST_SONG_NAME), TRUE);
   gtk_tree_view_column_set_visible(gtk_tree_view_get_column
 				   (GTK_TREE_VIEW(view), LOADER_LIST_SONG_URI), FALSE);
 
@@ -140,31 +140,73 @@ void * download_thread(void *arg)
 {
   loader_download_args *args;
 
+  char complete_uri[512];
+  char tmp[256];
+
+  unsigned int mirror = 0;
+  unsigned int download_ok = 0;
+
   args = (loader_download_args *) arg;
 
-  fetch_data_to_file(args->uri, args->file_path);
+  //
+  // FIXME - this list should be configurable and not hardcoded
+  //
+  const char *mirrors[] = {
+    "http://www.prg.dtu.dk/HVSC/C64Music",
+    "http://hvsc.perff.dk",
+    "http://www.tld-crew.de/c64music",
+    "http://hvsc.pixolut.com/C64Music",
+    NULL
+  };
+
+  while (mirrors[mirror] && !download_ok) {
+
+    // current mirror
+    snprintf(complete_uri, 512, "%s%s", mirrors[mirror], args->uri);
+
+    DEBUG("trying out HVSC mirror [%s]\n", mirrors[mirror]);
+    DEBUG("download [%s] -> [%s]\n", complete_uri, args->file_path);
+
+    snprintf(tmp, 256, "LOADING FROM MIRROR %d", mirror+1);
+
+    gdk_threads_enter();
+    set_status_text(tmp, NULL);
+    gdk_threads_leave();
+
+    fetch_data_to_file(complete_uri, args->file_path);
+
+    // if file does not exist, try another mirror?
+    if (g_file_test(args->file_path, G_FILE_TEST_EXISTS)) {
+      download_ok = 1;
+    }
+
+    DEBUG("download status [%s] (mirror %d)", download_ok ? "ok" : "not ok", mirror);
+    mirror++;
+
+  } // while download not ok
+
 
   gdk_threads_enter();
 
-  if (!g_file_test(args->file_path, G_FILE_TEST_EXISTS)) {
-    set_status_text("NETWORK ERROR", NULL);
-    goto leave;
-  } else {
-    set_status_text("READY.", NULL);
-  }
-
+  // remove entry anyway, is either downloaded or 'bad'
   gtk_list_store_remove(GTK_LIST_STORE(args->model), &args->iter);
 
-  if (sidtune_is_ok(args->file_path)) {
 
-    add_song_to_playlist(args->file_path);
+  if (download_ok) {
 
-    set_status_text("SONG WAS DOWNLOADED", NULL);
+    if (sidtune_is_ok(args->file_path)) {
+
+      add_song_to_playlist(args->file_path);
+
+      set_status_text("SONG WAS DOWNLOADED", NULL);
+    } else {
+      // download succeeded but file is not ok for msid
+      set_status_text("TUNE NOT SUPPORTED", NULL);
+    }
   } else {
-    set_status_text("TUNE NOT SUPPORTED", NULL);
+    set_status_text("SONG WAS NOT FOUND", NULL);
   }
 
- leave:
 
   gdk_threads_leave();
 
@@ -248,10 +290,6 @@ download_and_remove(GtkTreeView       *tree_view,
 
       snprintf(file_path, 256, "%s/%s", *p, name);
 
-      // printf("msid downloading [%s]\n", file_path);
-
-      /* --- LAUNCH THREAD HERE --- */
-
       /* FIXME - check first internet connection availability */
 
       dload_args.model = model;
@@ -314,6 +352,7 @@ void *search_thread (void *arg)
     for (tmp = list; tmp; tmp = g_slist_next(tmp)) {
 
       entry = (msid_search_entry*) tmp->data;
+
       gtk_list_store_append(GTK_LIST_STORE(model), &iter);
       gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			 LOADER_LIST_SONG_NAME, g_strdup(entry->file_name),
@@ -520,7 +559,6 @@ create_loader_page (msid_search_plugin *plugin,
 
   s_widgets.entry     = search_entry;
   s_widgets.song_list = song_list;
-
 
   gtk_entry_completion_set_inline_completion(entry_completion, TRUE);
   gtk_entry_completion_set_popup_completion(entry_completion, TRUE);

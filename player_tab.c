@@ -28,6 +28,9 @@ GtkWidget *subsong_selector;
 
 static void (*set_status_text) (const char*, const char*) = NULL;
 
+static gint name_id = PLAYER_LIST_SONG_NAME;
+static gint author_id = PLAYER_LIST_SONG_AUTHOR;
+
 static GtkTreeModel*
 create_and_fill_model (void)
 {
@@ -44,9 +47,11 @@ sort (GtkTreeViewColumn *treeviewcolumn,
       gpointer           data)
 {
   GtkTreeModel *sort_model;
+  gint *id = (gint *) data;
+
   sort_model = gtk_tree_view_get_model(GTK_TREE_VIEW(player_song_list));
-  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sort_model),
-                                        (gint) data, GTK_SORT_ASCENDING);
+  gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE (sort_model),
+				       id ? *id : 0, GTK_SORT_ASCENDING);
 }
 
 static GtkWidget*
@@ -70,7 +75,6 @@ create_view_and_model (void)
   printf ("%d\n", color->red);
   g_free (value);
   */
-
 
 #ifdef HANDHELD_UI
   g_object_set (G_OBJECT (renderer), "height", 42, NULL);
@@ -107,9 +111,9 @@ create_view_and_model (void)
                                       TRUE);
 
   g_signal_connect (G_OBJECT (gtk_tree_view_get_column(GTK_TREE_VIEW(view),PLAYER_LIST_SONG_NAME)),
-                    "clicked", G_CALLBACK (sort), (gpointer) PLAYER_LIST_SONG_NAME);
+                    "clicked", G_CALLBACK (sort), (gpointer) &name_id);
   g_signal_connect (G_OBJECT (gtk_tree_view_get_column(GTK_TREE_VIEW(view),PLAYER_LIST_SONG_AUTHOR)),
-                    "clicked", G_CALLBACK (sort), (gpointer) PLAYER_LIST_SONG_AUTHOR);
+                    "clicked", G_CALLBACK (sort), (gpointer) &author_id);
   gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                               GTK_SELECTION_SINGLE);
   
@@ -283,7 +287,9 @@ void *read_filenames_thread (void *arg)
 
   // SORT
 
-  sort (NULL, (gpointer) PLAYER_LIST_SONG_NAME);
+  int name_index = 0;
+
+  sort (NULL, (gpointer) &name_index);
 
   // SELECT FIRST ITEM /////////////////////////////
   model = gtk_tree_view_get_model (GTK_TREE_VIEW(player_song_list));

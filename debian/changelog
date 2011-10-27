@@ -1,3 +1,12 @@
+msid (0.4.8-2) unstable; urgency=low
+
+  * remove c64.org plugin, use super search as default
+  * iterate over set of HVSC mirrors when loading
+  * fix column sort in player view, was broken
+  * add missing -ldl to Makefile
+
+ -- Tapani Pälli <lemody@gmail.com>  Fri, 28 Oct 2011 07:28:36 +0000
+
 msid (0.4.7-2) unstable; urgency=low
 
   * implement size limitation for the thumbnail cache

@@ -5,6 +5,10 @@
 
 gtk-update-icon-cache -f /usr/share/icons/hicolor
 
+# remove possibly existing old c64org plugin
+# (more generic approach with multiple mirrors taken)
+rm -f /opt/msid/usr/lib/msid/search/libmsid_c64org.so
+
 #DEBHELPER#
 
 exit 0

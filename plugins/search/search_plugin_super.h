@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MSID_C64ORG_SEARCH_PLUGIN
-#define MSID_C64ORG_SEARCH_PLUGIN
+#ifndef MSID_SUPER_SEARCH_PLUGIN
+#define MSID_SUPER_SEARCH_PLUGIN
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,12 +30,12 @@ extern "C" {
 
 #include "../search_iface.h"
 
-class c64org_search : public msid_search_plugin
+class super_search : public msid_search_plugin
 {
   public :
 
-  c64org_search() { tree = NULL; }
-  ~c64org_search();
+  super_search() { tree = NULL; }
+  ~super_search();
 
   GSList *search_for_sid (const char *needle, gpointer data);
   unsigned int init(); // TODO - load local database here
@@ -47,11 +47,11 @@ class c64org_search : public msid_search_plugin
 // class factories
 
 extern "C" void* create() {
-  return new c64org_search;
+  return new super_search;
 }
 
 extern "C" void destroy (void *plug) {
-  delete (c64org_search *) plug;
+  delete (super_search *) plug;
 }
 
 #ifdef __cplusplus

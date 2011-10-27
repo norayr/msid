@@ -17,10 +17,10 @@
  *
  */
 
-#include "search_plugin_c64org.h"
+#include "search_plugin_super.h"
 #include "../curling.c"
 
-static GSList *search_results =NULL;
+static GSList *search_results = NULL;
 
 static gint
 comparison_func (gconstpointer a,
@@ -37,7 +37,7 @@ destroy_string (gpointer data)
   g_free (data);
 }
 
-c64org_search::~c64org_search()
+super_search::~super_search()
 {
   if (tree)
     g_tree_destroy (tree);
@@ -116,16 +116,16 @@ read_file_to_tree (GTree *tree, const gchar *file)
 }
 
 unsigned int
-c64org_search::init (void)
+super_search::init(void)
 {
-  tree = g_tree_new_full ((GCompareDataFunc)
-			  comparison_func,
-                          NULL,
-                          destroy_string,
-                          destroy_string);
+  tree = g_tree_new_full((GCompareDataFunc)
+			 comparison_func,
+			 NULL,
+			 destroy_string,
+			 destroy_string);
 
   //
-  // read C64.ORG database to a binary tree (~1MB)
+  // read STIL database to a binary tree (~1MB)
   //
   read_file_to_tree (tree, "/opt/msid/usr/share/msid/STIL.txt");
 
@@ -134,19 +134,19 @@ c64org_search::init (void)
 
 /*
  * called for each node in tree when searching
+ * builds up a list with results and direct uri
  */
 gboolean
-traverse_func (gpointer key,
-	       gpointer value,
-	       gpointer needle)
+traverse_func(gpointer key,
+	      gpointer value,
+	      gpointer needle)
 {
   char buffer[256];
 
-#define C64ORG_HVSC_ROOT "http://www.c64.org/HVSC"
   if (strstr ((char*)key, (char*)needle))
   {
-    snprintf (buffer, 256, "%s%s", C64ORG_HVSC_ROOT, (char*)value);
-    search_results = g_slist_prepend (search_results, g_strdup (buffer));
+    snprintf(buffer, 256, "%s", (char*) value);
+    search_results = g_slist_prepend(search_results, g_strdup(buffer));
   }
 
   /* continue search */
@@ -176,8 +176,8 @@ make_hvsc_path (gchar *uri)
 }
 
 GSList *
-c64org_search::search_for_sid (const char *needle,
-			       gpointer data)
+super_search::search_for_sid(const char *needle,
+			     gpointer data)
 {
   GSList *tmp, *entry_list =NULL;
   gchar *needle_copy;
@@ -192,9 +192,9 @@ c64org_search::search_for_sid (const char *needle,
 
   //DEBUG ("local search for [%s]\n", needle_copy);
 
-  g_tree_foreach (tree, traverse_func, (gpointer) needle_copy);
+  g_tree_foreach(tree, traverse_func, (gpointer) needle_copy);
 
-  g_free (needle_copy);
+  g_free(needle_copy);
 
   //DEBUG ("local search END.\n");
 
@@ -206,10 +206,10 @@ c64org_search::search_for_sid (const char *needle,
   for (tmp=search_results; tmp; tmp=g_slist_next(tmp))
   {
     msid_search_entry *entry = (msid_search_entry *) malloc (sizeof (msid_search_entry));
-     
-    entry -> uri = g_strdup((char *) tmp->data);
-    entry -> file_name = get_filename_from_uri ((char *) entry->uri);
-    entry -> hvsc_path = make_hvsc_path (entry->uri);
+
+    entry->uri = g_strdup((char *) tmp->data);
+    entry->file_name = get_filename_from_uri ((char *) entry->uri);
+    entry->hvsc_path = make_hvsc_path (entry->uri);
 
     entry_list = g_slist_prepend (entry_list, entry);
   }

@@ -6,7 +6,7 @@ PROGRAM = msid
 SOURCES = main.cpp msidmachine.cpp loader_tab.c player_tab.c config_tab.c image_tab.c ui.c sid_test.c plugins/curling.c
 OPTS = -g -O2 -Wall
 
-DEPS = `pkg-config --libs --cflags glib-2.0 gthread-2.0 gtk+-2.0` -lsidplay -lcurl
+DEPS = `pkg-config --libs --cflags glib-2.0 gthread-2.0 gtk+-2.0` -lsidplay -lcurl -ldl
 
 HILDON = `pkg-config --cflags --libs hildon-1 hildon-fm-2` -DHILDON -DHANDHELD_UI
 OPTDIR = $(DESTDIR)/opt/msid
