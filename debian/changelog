@@ -1,3 +1,10 @@
+msid (0.0.1-1+leste1) unstable; urgency=low
+
+  * port to maemo leste
+  * added #include <unistd.h> to sed_test.c for unlink() function.
+
+ -- Norayr Chilingarian <norayr@arnet.am>  Tue, 21 Jun 2022 18:38:36 +0400
+
 msid (0.4.8-2) unstable; urgency=low
 
   * remove c64.org plugin, use super search as default
