@@ -20,7 +20,7 @@
 
 #include "paths.h"
 
-//#define MSID_DEBUG 1
+#define MSID_DEBUG 1
 
 // states for msidMachine
 enum {

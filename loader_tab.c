@@ -152,7 +152,7 @@ void * download_thread(void *arg)
   // FIXME - this list should be configurable and not hardcoded
   //
   const char *mirrors[] = {
-    "http://www.prg.dtu.dk/HVSC/C64Music",
+    "https://www.prg.dtu.dk/HVSC/C64Music",
     "http://hvsc.perff.dk",
     "http://www.tld-crew.de/c64music",
     "http://hvsc.pixolut.com/C64Music",
@@ -328,7 +328,7 @@ void *search_thread (void *arg)
   GtkWidget *song_list;
   loader_search_args *args;
   extern msid_search_plugin *msid_active_search_plugin;
- 
+
   args = (loader_search_args *) arg;
 
   song_list = args->list;
@@ -488,7 +488,7 @@ append_to_vbox (GtkWidget *box, GtkWidget *w,
   gtk_box_pack_start(GTK_BOX(box), w, a, b, 0);
 }
 
-    
+
 static void
 run_search (GtkEntry *entry,
 	    gpointer data)
